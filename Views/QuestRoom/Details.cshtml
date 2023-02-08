@@ -1,0 +1,160 @@
+﻿@model QuestRoom
+
+@{
+    ViewData["Title"] = "Details";
+
+    const int ProgressBarMaximumValue = 100;
+    const int RatingMaximumValue = 5;
+    const int DifficultyLevelMaximumValue = 5;
+    const int FearLevelMaximumValue = 5;
+
+    const int ProportionRatingToProgressBar = ProgressBarMaximumValue / RatingMaximumValue;
+    const int ProportionDifficultyToProgressBar = ProgressBarMaximumValue / DifficultyLevelMaximumValue;
+    const int ProportionFearToProgressBar = ProgressBarMaximumValue / FearLevelMaximumValue;
+}
+
+@section Styles {
+    <style>
+        #body {
+            background-color: #292929;
+        }
+
+        body {
+            overflow-x: hidden;
+        }
+
+        .bg-image {
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .description {
+            max-height: 200px;
+            overflow-y: hidden;
+        }
+
+            .description:hover {
+                overflow-y: scroll;
+            }
+
+        .param-name {
+            color: #f7403f;
+            font-weight: 600;
+        }
+
+        .ff-UB {
+            font-family: "Ubuntu-Bold", Arial, Helvetica, Calibri;
+        }
+    </style>
+}
+
+<div id="body" class="container-fluid h-100">
+    <div class="container-fluid w-100 h-100 px-0">
+        <div class="row bg-black">
+            <div class="col-7 m-auto bg-image"
+                 style="
+            background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.9)),
+              url(@Model.PathToLogo);
+          ">
+                <div class="row">
+                    <div class="col-12 text-light ps-3 pe-3 pt-2 fs-4 text-uppercase fw-semibold">
+                        @Html.Raw($"{Model.Name} ({Model.CompanyName})")
+                    </div>
+                    <div class="col-12 ps-3 pe-3 pt-2 text-warning">
+                        @for (byte i = 0; i < 5; i++)
+                        {
+                            if (i <= Model.Rating)
+                            {
+                                <i class="fa fa-star"></i>
+                            }
+                            else
+                            {
+                                <i class="fa fa-star-o"></i>
+                            }
+                        }
+                    </div>
+                    <div class="col-12 description text-justify text-light fs-14 py-3 mt-2 fw-semibold">
+                        @Model.Description
+                    </div>
+                    <div class="col-9 m-auto fs-3 pt-3 text-white">
+                        <div class="row row-cols-4 g-2 justify-content-center text-center p-2">
+                            <div>@Html.Raw($"{Model.MinimumAge}+")</div>
+                            <div>
+                                <i class="fa fa-users"></i>
+                                @Html.Raw($"{Model.MinimumNumberOfPlayers}-{Model.MaximumNumberOfPlayers}")
+                            </div>
+                            <div>
+                                <i class="fa fa-clock"></i>
+                                @Model.MinutesDuration
+                            </div>
+                            <div>
+                                <i class="fa fa-money-check"></i>
+                                @Html.Raw($"{Model.Price}грн.")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-8 m-auto">
+                <div class="row">
+                    <div class="col-12 text-light text-center fw-semibold fs-3" style="border-bottom: 1px solid #4b4848">
+                        Описание
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="row no-gutters pr-md-5 text-light">
+                                <div class="col-12 my-1">
+                                    <span class="param-name ff-UB">Адрес:&nbsp;</span>
+                                    @Model.Address
+                                </div>
+                                <div class="col-12 my-1">
+                                    <span class="param-name ff-UB">Номер телефона:&nbsp;</span>
+                                    @Model.PhoneNumber
+                                </div>
+                                <div class="col-12 my-1">
+                                    <span class="param-name ff-UB">E-mail:&nbsp;</span>
+                                    @Model.Email
+                                </div>
+                                <div class="col-12 my-1">
+                                    <span class="param-name ff-UB">Компания:&nbsp;</span>
+                                    @Model.CompanyName
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="row order-last order-lg-0 rounded align-self-center mx-auto my-3 p-4 text-light"
+                                 style="max-width: 450px; background-color: #212121">
+                                <div class="row g-0">
+                                    <div class="col-12 mb-4 pt-1 fw-semibold text-center text-uppercase">
+                                        Квест комната "@Model.Name": <br />Оценка
+                                    </div>
+                                    <div class="col-12 mb-3">
+                                        Рейтинг
+                                        <div class="progress mt-1">
+                                            <div class="progress-bar" style="width: @Html.Raw(Model.Rating * ProportionRatingToProgressBar)%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 mb-3">
+                                        Сложность
+                                        <div class="progress mt-1">
+                                            <div class="progress-bar" style="width: @Html.Raw(Model.DifficultyLevel * ProportionDifficultyToProgressBar)%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 mb-3">
+                                        Страх
+                                        <div class="progress mt-1">
+                                            <div class="progress-bar" style="width: @Html.Raw(Model.FearLevel * ProportionFearToProgressBar)%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
