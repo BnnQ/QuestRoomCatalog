@@ -3,6 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using Homework.Data;
 using Homework.ViewModels;
 using System.Diagnostics;
+using Homework.ViewModels.QuestRoom;
+using Homework.Data.Entities;
+using Homework.Services;
 
 namespace Homework.Controllers
 {
@@ -16,9 +19,23 @@ namespace Homework.Controllers
         }
 
         // GET: QuestRoom
-        public async Task<IActionResult> Index()
+        [HttpGet]
+        public async Task<IActionResult> Index([FromServices] DatabaseDataFilterBuilder<QuestRoom> dataFilterBuilder, string? searchName, string? searchGenre, int? searchMinutesDuration, int? searchMinimumNumberOfPlayers, int? searchMinimumAge, int? searchMinimumDifficultyLevel, int? searchMaximumDifficultyLevel, string? searchCompanyName, int? searchRating, int? searchFearLevel)
         {
-              return View(await context.QuestRooms.ToListAsync());
+            DatabaseDataFilter<QuestRoom> dataFilter = dataFilterBuilder.SetItems(context.QuestRooms)
+                .AddRuleIf(rule: questRoom => questRoom.Name.Contains(searchName!), condition: !string.IsNullOrWhiteSpace(searchName))
+                .AddRuleIf(questRoom => questRoom.Genre.Equals(searchGenre), !string.IsNullOrWhiteSpace(searchGenre))
+                .AddRuleIf(questRoom => questRoom.MinutesDuration == searchMinutesDuration, searchMinutesDuration.HasValue && searchMinutesDuration.Value > 0)
+                .AddRuleIf(questRoom => questRoom.MinimumNumberOfPlayers >= searchMinimumNumberOfPlayers, searchMinimumNumberOfPlayers.HasValue && searchMinimumNumberOfPlayers.Value > 0)
+                .AddRuleIf(questRoom => questRoom.MinimumAge >= searchMinimumAge, searchMinimumAge.HasValue && searchMinimumAge.Value > 0)
+                .AddRuleIf(questRoom => questRoom.DifficultyLevel >= searchMinimumDifficultyLevel, searchMinimumDifficultyLevel.HasValue && searchMinimumDifficultyLevel.Value > 0)
+                .AddRuleIf(questRoom => questRoom.DifficultyLevel <= searchMaximumDifficultyLevel, searchMaximumDifficultyLevel.HasValue && searchMaximumDifficultyLevel.Value > 0)
+                .AddRuleIf(questRoom => questRoom.CompanyName.Equals(searchCompanyName), !string.IsNullOrWhiteSpace(searchCompanyName))
+                .AddRuleIf(questRoom => questRoom.Rating == searchRating, searchRating.HasValue && searchRating.Value > 0)
+                .AddRuleIf(questRoom => questRoom.FearLevel == searchFearLevel, searchFearLevel.HasValue && searchFearLevel.Value > 0)
+                .Build();
+
+            return View(new IndexViewModel(await dataFilter.FilterItems().ToListAsync()));
         }
 
         // GET: QuestRoom/Details/5
