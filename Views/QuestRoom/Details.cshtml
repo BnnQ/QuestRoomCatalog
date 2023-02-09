@@ -1,16 +1,8 @@
-﻿@model QuestRoom
+﻿@using Homework.ViewModels.QuestRoom
+@model QuestRoomViewModel
 
 @{
     ViewData["Title"] = "Details";
-
-    const int ProgressBarMaximumValue = 100;
-    const int RatingMaximumValue = 5;
-    const int DifficultyLevelMaximumValue = 5;
-    const int FearLevelMaximumValue = 5;
-
-    const int ProportionRatingToProgressBar = ProgressBarMaximumValue / RatingMaximumValue;
-    const int ProportionDifficultyToProgressBar = ProgressBarMaximumValue / DifficultyLevelMaximumValue;
-    const int ProportionFearToProgressBar = ProgressBarMaximumValue / FearLevelMaximumValue;
 }
 
 @section Styles {
@@ -49,8 +41,8 @@
     </style>
 }
 
-<div id="body" class="container-fluid h-100">
-    <div class="container-fluid w-100 h-100 px-0">
+<div id="body" class="container-fluid">
+    <div class="container-fluid min-vh-100 px-0">
         <div class="row bg-black">
             <div class="col-7 m-auto bg-image"
                  style="
@@ -59,30 +51,20 @@
           ">
                 <div class="row">
                     <div class="col-12 text-light ps-3 pe-3 pt-2 fs-4 text-uppercase fw-semibold">
-                        @Html.Raw($"{Model.Name} ({Model.CompanyName})")
+                        @Model.FullName
                     </div>
                     <div class="col-12 ps-3 pe-3 pt-2 text-warning">
-                        @for (byte i = 0; i < 5; i++)
-                        {
-                            if (i <= Model.Rating)
-                            {
-                                <i class="fa fa-star"></i>
-                            }
-                            else
-                            {
-                                <i class="fa fa-star-o"></i>
-                            }
-                        }
+                        @Html.Raw(Model.RawRating)
                     </div>
                     <div class="col-12 description text-justify text-light fs-14 py-3 mt-2 fw-semibold">
                         @Model.Description
                     </div>
                     <div class="col-9 m-auto fs-3 pt-3 text-white">
                         <div class="row row-cols-4 g-2 justify-content-center text-center p-2">
-                            <div>@Html.Raw($"{Model.MinimumAge}+")</div>
+                            <div>@Model.MinimumAge</div>
                             <div>
                                 <i class="fa fa-users"></i>
-                                @Html.Raw($"{Model.MinimumNumberOfPlayers}-{Model.MaximumNumberOfPlayers}")
+                                @Model.NumberOfPlayers
                             </div>
                             <div>
                                 <i class="fa fa-clock"></i>
@@ -90,7 +72,7 @@
                             </div>
                             <div>
                                 <i class="fa fa-money-check"></i>
-                                @Html.Raw($"{Model.Price}грн.")
+                                @Model.Price
                             </div>
                         </div>
                     </div>
@@ -134,19 +116,19 @@
                                     <div class="col-12 mb-3">
                                         Рейтинг
                                         <div class="progress mt-1">
-                                            <div class="progress-bar" style="width: @Html.Raw(Model.Rating * ProportionRatingToProgressBar)%"></div>
+                                            <div class="progress-bar" style="width: @Model.ProgressRating"></div>
                                         </div>
                                     </div>
                                     <div class="col-12 mb-3">
                                         Сложность
                                         <div class="progress mt-1">
-                                            <div class="progress-bar" style="width: @Html.Raw(Model.DifficultyLevel * ProportionDifficultyToProgressBar)%"></div>
+                                            <div class="progress-bar" style="width: @Model.ProgressDifficulty"></div>
                                         </div>
                                     </div>
                                     <div class="col-12 mb-3">
                                         Страх
                                         <div class="progress mt-1">
-                                            <div class="progress-bar" style="width: @Html.Raw(Model.FearLevel * ProportionFearToProgressBar)%"></div>
+                                            <div class="progress-bar" style="width: @Model.ProgressFear"></div>
                                         </div>
                                     </div>
                                 </div>

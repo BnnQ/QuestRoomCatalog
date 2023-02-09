@@ -28,8 +28,8 @@ namespace Homework.Controllers
                 .AddRuleIf(questRoom => questRoom.MinutesDuration == searchMinutesDuration, searchMinutesDuration.HasValue && searchMinutesDuration.Value > 0)
                 .AddRuleIf(questRoom => questRoom.MinimumNumberOfPlayers >= searchMinimumNumberOfPlayers, searchMinimumNumberOfPlayers.HasValue && searchMinimumNumberOfPlayers.Value > 0)
                 .AddRuleIf(questRoom => questRoom.MinimumAge >= searchMinimumAge, searchMinimumAge.HasValue && searchMinimumAge.Value > 0)
-                .AddRuleIf(questRoom => questRoom.DifficultyLevel >= searchMinimumDifficultyLevel, searchMinimumDifficultyLevel.HasValue && searchMinimumDifficultyLevel.Value > 0)
-                .AddRuleIf(questRoom => questRoom.DifficultyLevel <= searchMaximumDifficultyLevel, searchMaximumDifficultyLevel.HasValue && searchMaximumDifficultyLevel.Value > 0)
+                .AddRuleIf(questRoom => questRoom.DifficultyLevel >= searchMinimumDifficultyLevel, searchMinimumDifficultyLevel.HasValue && searchMinimumDifficultyLevel.Value > 0 && searchMinimumDifficultyLevel <= searchMaximumDifficultyLevel)
+                .AddRuleIf(questRoom => questRoom.DifficultyLevel <= searchMaximumDifficultyLevel, searchMaximumDifficultyLevel.HasValue && searchMaximumDifficultyLevel.Value > 0 && searchMaximumDifficultyLevel >= searchMinimumDifficultyLevel)
                 .AddRuleIf(questRoom => questRoom.CompanyName.Equals(searchCompanyName), !string.IsNullOrWhiteSpace(searchCompanyName))
                 .AddRuleIf(questRoom => questRoom.Rating == searchRating, searchRating.HasValue && searchRating.Value > 0)
                 .AddRuleIf(questRoom => questRoom.FearLevel == searchFearLevel, searchFearLevel.HasValue && searchFearLevel.Value > 0)
@@ -53,7 +53,7 @@ namespace Homework.Controllers
                 return NotFound();
             }
 
-            return View(questRoom);
+            return View(new QuestRoomViewModel(questRoom));
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
