@@ -56,12 +56,17 @@
         .fs-5plus {
             font-size: 1.1rem !important;
         }
+
+        input[type=search].form-control:focus {
+            border: none !important;
+            box-shadow: none !important;
+        }
     </style>
 }
 
 <div id="body" class="container-fluid">
     <div class="container h-100 min-vh-100">
-        <div class="row p-3 gap-1">
+        <div class="row p-3 g-3">
             <div class="col-md-6 col-xl-4 pb-1">
                 <button class="btn btn-outline-light w-100"
                         data-bs-toggle="offcanvas"
@@ -73,6 +78,7 @@
                 <form method="GET">
                     <div class="input-group rounded" style="outline: 1px solid white">
                         <input asp-for="SearchParameterSet.Name"
+                               type="search"
                                placeholder="Поиск по названию"
                                class="form-control border-0 bg-transparent text-light" />
                         <input type="hidden" asp-for="SearchParameterSet.Genre" />
