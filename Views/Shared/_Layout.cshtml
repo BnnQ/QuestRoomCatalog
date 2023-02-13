@@ -13,10 +13,19 @@
         .container-fluid {
             padding: 0 !important;
         }
+
+        header * {
+            background-color: inherit;
+        }
     </style>
 </head>
 <body class="container-fluid">
-            @RenderBody()
+    <header class="sticky-top container-fluid p-0" style="height: 100px; background-color: #212121">
+        <a asp-controller="QuestRoom" asp-action="Index" class="w-100 h-100">
+            <img src="~/media/QuestRoom/Logo.png" alt="logo" class="h-100 ms-5" style="width: 120px" />
+        </a>
+    </header>
+    @RenderBody()
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
