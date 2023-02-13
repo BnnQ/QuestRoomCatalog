@@ -1,0 +1,154 @@
+﻿@model IEnumerable<Homework.Data.Entities.QuestRoom>
+
+@{
+    Layout = "_Admin_Layout";
+    ViewData["Title"] = "Index";
+}
+@section Styles {
+    <style>
+        .cell-wide {
+            min-width: 300px;
+        }
+
+        .cell-long {
+            min-height: 300px;
+        }
+
+        .cell-compact {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .table-responsive {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
+}
+
+<div id="body" class="position-relative">
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Name)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Genre)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Description)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.MinutesDuration)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.MinimumNumberOfPlayers)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.MaximumNumberOfPlayers)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.MinimumAge)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Address)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.PhoneNumber)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Email)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.CompanyName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Rating)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.FearLevel)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.DifficultyLevel)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Price)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.PathToLogo)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Genre)
+                        </td>
+                        <td>
+                            <div class="cell-wide cell-compact">
+                                @Html.DisplayFor(modelItem => item.Description)
+                            </div>
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.MinutesDuration)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.MinimumNumberOfPlayers)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.MaximumNumberOfPlayers)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.MinimumAge)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Address)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.PhoneNumber)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Email)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.CompanyName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Rating)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.FearLevel)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DifficultyLevel)
+                        </td>
+                        <td class="text-nowrap">
+                            @Html.DisplayFor(modelItem => item.Price)
+                        </td>
+                        <td>
+                            <div class="cell-wide" style="height: 225px!important">
+                                <img src="@Html.Raw($"/{item.PathToLogo}")" alt="Quest room logo" class="w-100 h-100">
+                            </div>
+                        </td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.Id">Изменить</a>
+                            <form method="POST" asp-action="Delete">
+                                <input type="hidden" name="id" value="@item.Id">
+                                <button type="submit" class="btn btn-link">Удалить</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

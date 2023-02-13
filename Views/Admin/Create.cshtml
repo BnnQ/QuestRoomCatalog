@@ -1,0 +1,117 @@
+﻿@model CreateQuestRoomViewModel
+
+@{
+    Layout = "_Admin_Layout";
+    ViewData["Title"] = "Создание";
+}
+
+<div id="body" class="container-fluid min-vh-100">
+<div class="row justify-content-center">
+    <div class="col-md-4">
+        <form asp-action="Create" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="QuestRoom.Name" class="control-label"></label>
+                <input asp-for="QuestRoom.Name" class="form-control" />
+                    <span asp-validation-for="QuestRoom.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                    <label asp-for="QuestRoom.Genre" class="control-label"></label>
+                    <input asp-for="QuestRoom.Genre" list="genres" class="form-control">
+                <datalist id="genres" asp-items="GenreSelectList">
+                        @foreach (string genre in Model!.Genres)
+                        {
+                            <option value="@genre"></option>
+                        }
+                    </datalist>
+                    <span asp-validation-for="QuestRoom.Genre" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="QuestRoom.Description" class="control-label"></label>
+                <textarea asp-for="QuestRoom.Description" rows="4" class="form-control" style="resize: none"></textarea>
+                    <span asp-validation-for="QuestRoom.Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="QuestRoom.MinutesDuration" class="control-label"></label>
+                    <input asp-for="QuestRoom.MinutesDuration" class="form-control" />
+                    <span asp-validation-for="QuestRoom.MinutesDuration" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="QuestRoom.MinimumNumberOfPlayers" class="control-label"></label>
+                    <input asp-for="QuestRoom.MinimumNumberOfPlayers" class="form-control" />
+                    <span asp-validation-for="QuestRoom.MinimumNumberOfPlayers" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="QuestRoom.MaximumNumberOfPlayers" class="control-label"></label>
+                    <input asp-for="QuestRoom.MaximumNumberOfPlayers" class="form-control" />
+                <span asp-validation-for="QuestRoom.MaximumNumberOfPlayers" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                    <label asp-for="QuestRoom.MinimumAge" class="control-label"></label>
+                <input asp-for="QuestRoom.MinimumAge" class="form-control" />
+                    <span asp-validation-for="QuestRoom.MinimumAge" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="QuestRoom.Address" class="control-label"></label>
+                <input asp-for="QuestRoom.Address" class="form-control" />
+                    <span asp-validation-for="QuestRoom.Address" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                    <label asp-for="QuestRoom.PhoneNumber" class="control-label"></label>
+                    <input asp-for="QuestRoom.PhoneNumber" class="form-control" />
+                    <span asp-validation-for="QuestRoom.PhoneNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="QuestRoom.Email" class="control-label"></label>
+                    <input asp-for="QuestRoom.Email" class="form-control" />
+                    <span asp-validation-for="QuestRoom.Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="QuestRoom.CompanyName" class="control-label"></label>
+                    <input asp-for="QuestRoom.CompanyName" class="form-control" list="companyNames"/>
+                    <datalist id="companyNames">
+                        <datalist id="companyNames" asp-items="GenreSelectList">
+                            @foreach (string companyName in Model!.CompanyNames)
+                            {
+                                <option value="@companyName"></option>
+                            }
+                        </datalist>
+                    </datalist>
+                <span asp-validation-for="QuestRoom.CompanyName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="QuestRoom.Rating" class="control-label"></label>
+                <input asp-for="QuestRoom.Rating" class="form-control" />
+                <span asp-validation-for="QuestRoom.Rating" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="QuestRoom.FearLevel" class="control-label"></label>
+                <input asp-for="QuestRoom.FearLevel" class="form-control" />
+                    <span asp-validation-for="QuestRoom.FearLevel" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="QuestRoom.DifficultyLevel" class="control-label"></label>
+                <input asp-for="QuestRoom.DifficultyLevel" class="form-control" />
+                    <span asp-validation-for="QuestRoom.DifficultyLevel" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="QuestRoom.Price" class="control-label"></label>
+                <input asp-for="QuestRoom.Price" class="form-control" />
+                    <span asp-validation-for="QuestRoom.Price" class="text-danger"></span>
+            </div>
+                        <div class="form-group">
+                <label for="logo" class="control-label">Логотип:</label>
+                <input type="file" accept="image/*" name="logo" id="logo" class="form-control" />
+            </div>
+            <div class="form-group d-flex mt-3">
+                <input type="submit" value="Создать" class="btn btn-primary flex-grow-1"/>
+            </div>
+        </form>
+    </div>
+</div>
+
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
