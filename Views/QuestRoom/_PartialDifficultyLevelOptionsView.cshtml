@@ -1,0 +1,12 @@
+﻿@model byte
+@for (byte i = 1; i <= 5; i++)
+{
+    if (i == Model)
+    {
+        <option value="@i" selected>@i</option>
+    }
+    else
+    {
+        <option value="@i">@i</option>
+    }
+}

@@ -2,7 +2,12 @@
 @model IndexViewModel
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Квест комнаты";
+
+    byte rating = Model.SearchParameterSet.Rating.HasValue ? Model.SearchParameterSet.Rating.Value : (byte)0;
+    byte minimumDifficultyLevel = Model.SearchParameterSet.MinimumDifficultyLevel.HasValue ? Model.SearchParameterSet.MinimumDifficultyLevel.Value : (byte)0;
+    byte maximumDifficultyLevel = Model.SearchParameterSet.MaximumDifficultyLevel.HasValue ? Model.SearchParameterSet.MaximumDifficultyLevel.Value : (byte)0;
+    byte fearLevel = Model.SearchParameterSet.FearLevel.HasValue ? Model.SearchParameterSet.FearLevel.Value : (byte)0;
 }
 
 @section Styles {
@@ -37,7 +42,7 @@
 
         .overlay-content {
             overflow: hidden;
-            line-height: 2rem;
+            line-height: 2.5rem;
             display: -webkit-box;
             display: -moz-box;
             -webkit-line-clamp: 3;
@@ -56,7 +61,7 @@
 
 <div id="body" class="container-fluid">
     <div class="container h-100 min-vh-100">
-        <div class="row p-3">
+        <div class="row p-3 gap-1">
             <div class="col-md-6 col-xl-4 pb-1">
                 <button class="btn btn-outline-light w-100"
                         data-bs-toggle="offcanvas"
@@ -67,18 +72,18 @@
             <div class="col-md-6 col-xl-4 pb-1" style="margin-left: auto">
                 <form method="GET">
                     <div class="input-group rounded" style="outline: 1px solid white">
-                        <input asp-for="SearchName"
+                        <input asp-for="SearchParameterSet.Name"
                                placeholder="Поиск по названию"
                                class="form-control border-0 bg-transparent text-light" />
-                        <input type="hidden" asp-for="SearchGenre" />
-                        <input type="hidden" asp-for="SearchMinutesDuration" />
-                        <input type="hidden" asp-for="SearchMinimumNumberOfPlayers" />
-                        <input type="hidden" asp-for="SearchMinimumAge" />
-                        <input type="hidden" asp-for="SearchMinimumDifficultyLevel" />
-                        <input type="hidden" asp-for="SearchMaximumDifficultyLevel" />
-                        <input type="hidden" asp-for="SearchCompanyName" />
-                        <input type="hidden" asp-for="SearchRating" />
-                        <input type="hidden" asp-for="SearchFearLevel" />
+                        <input type="hidden" asp-for="SearchParameterSet.Genre" />
+                        <input type="hidden" asp-for="SearchParameterSet.MinutesDuration" />
+                        <input type="hidden" asp-for="SearchParameterSet.MinimumNumberOfPlayers" />
+                        <input type="hidden" asp-for="SearchParameterSet.MinimumAge" />
+                        <input type="hidden" asp-for="SearchParameterSet.MinimumDifficultyLevel" />
+                        <input type="hidden" asp-for="SearchParameterSet.MaximumDifficultyLevel" />
+                        <input type="hidden" asp-for="SearchParameterSet.CompanyName" />
+                        <input type="hidden" asp-for="SearchParameterSet.Rating" />
+                        <input type="hidden" asp-for="SearchParameterSet.FearLevel" />
                         <button type="submit" class="btn btn-link text-primary">
                             <i class="fa fa-search text-light"></i>
                         </button>
@@ -98,44 +103,43 @@
             {
                 @foreach (QuestRoom questRoom in Model.QuestRooms)
                 {
-                    QuestRoomViewModel questRoomViewModel = new(questRoom);
                     <div class="col-md-6 col-xl-4 pb-3">
                         <div class="row mx-auto h-100 rounded" style="background-color: #212121">
                             <div class="row g-0">
-                                <div class="col-12 hoverable-image-container">
-                                    <img class="w-100 h-100" src="@questRoomViewModel.PathToLogo" />
+                                <div class="col-12 hoverable-image-container w-100" style="height: 250px">
+                                    <img class="w-100 h-100" src="@Html.Raw($"/{questRoom.PathToLogo}")" alt="Quest room logo"/>
                                     <div class="overlay d-flex align-items-center justify-content-center">
-                                        <p class="overlay-content text-light">@questRoomViewModel.Description</p>
+                                        <p class="overlay-content text-light">@questRoom.Description</p>
                                     </div>
                                 </div>
-                                <div class="col-12 text-light ps-3 pe-3 pt-2 fs-5">@questRoomViewModel.Name</div>
+                                <div class="col-12 text-light ps-3 pe-3 pt-2 fs-5">@questRoom.Name</div>
                                 <div class="col-12 ps-3 pe-3 pt-2 text-warning">
-                                    @Html.Raw(questRoomViewModel.RawRating)
+                                    <partial name="_PartialRatingView" model="questRoom.Rating"/>
                                 </div>
                                 <div class="col-12 fs-6 text-secondary ps-3 pe-3 pt-2">
                                     <div class="pt-1">
                                         <i class="fa fa-location-dot mt-0"></i>
-                                        @questRoomViewModel.Address
+                                        @questRoom.Address
                                     </div>
                                     <div class="pt-1">
                                         <i class="fa fa-film mt-0"></i>
-                                        @questRoomViewModel.Genre
+                                        @questRoom.Genre
                                     </div>
                                 </div>
                             </div>
                             <div class="col-12 pb-3 row g-0 align-self-end align-items-end pt-1 ps-3 pe-3">
                                 <div class="col-7 d-grid align-self-end">
-                                    <p class="text-light fs-5 mb-2">@questRoomViewModel.Price</p>
-                                    <a class="btn btn-outline-light text-center p-2" asp-action="Details" asp-route-id="@questRoomViewModel.Id">Подробнее</a>
+                                    <p class="text-light fs-5 mb-2">@Html.Raw($"{questRoom.Price}грн.")</p>
+                                    <a class="btn btn-outline-light text-center p-2" asp-action="Details" asp-route-id="@questRoom.Id">Подробнее</a>
                                 </div>
                                 <div class="col-5 g-0 text-white fs-6">
-                                    <div class="col-12 text-nowrap text-end">@questRoomViewModel.MinimumAge</div>
+                                    <div class="col-12 text-nowrap text-end">@Html.Raw($"{questRoom.MinimumAge}+")</div>
                                     <div class="col-12 text-nowrap text-end fs-6">
-                                        @Html.Raw(questRoomViewModel.RawDifficultyLevel)
+                                        <partial name="_PartialDifficultyLevelView" model="questRoom.DifficultyLevel"/>
                                     </div>
                                     <div class="col fs-6 text-end">
                                         <i class="fa fa-users"></i>
-                                        @questRoomViewModel.NumberOfPlayers
+                                        @Html.Raw($"{questRoom.MinimumNumberOfPlayers}-{questRoom.MaximumNumberOfPlayers}")
                                     </div>
                                 </div>
                             </div>
@@ -151,24 +155,24 @@
          tabindex="-1"
          id="filterOffcanvas">
         <div class="offcanvas-header bg-danger text-light" style="max-height: 40px">
-            <h5 class="offcanvas-title">@Model.NumberOfQuests</h5>
+            <h5 class="offcanvas-title">@Html.Raw($"Найдено квестов {Model.NumberOfQuests}")</h5>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
         </div>
         <div class="offcanvas-body text-light" style="background-color: #242424">
             <form method="GET" class="d-flex flex-column w-100 h-100">
-                <input type="hidden" asp-for="SearchName" />
+                <input type="hidden" asp-for="SearchParameterSet.Name" />
                 <div class="mb-3">
-                    <label for="SearchGenre" class="form-label">Жанр</label>
-                    <select asp-for="SearchGenre"
+                    <label for="SearchParameterSet.Genre" class="form-label">Жанр</label>
+                    <select asp-for="SearchParameterSet.Genre"
                             asp-items="Model.GenreSelectList"
                             class="form-select"
                             style="background-color: #2e2e2e; color: #808080">
-                        <option value="" selected>Любой</option>
+                        <option value="" >Любой</option>
                     </select>
                 </div>
                 <div class="mb-3">
-                    <label for="SearchMinutesDuration" class="form-label">Длительность (минут)</label>
-                    <select asp-for="SearchMinutesDuration"
+                    <label for="SearchParameterSet.MinutesDuration" class="form-label">Длительность (минут)</label>
+                    <select asp-for="SearchParameterSet.MinutesDuration"
                             asp-items="Model.MinutesDurationSelectList"
                             class="form-select"
                             style="background-color: #2e2e2e; color: #808080">
@@ -177,7 +181,7 @@
                 </div>
                 <div class="mb-3">
                     <label for="searchMinimumNumberOfPlayers" class="form-label">Минимальное кол-во игроков</label>
-                    <select asp-for="SearchMinimumNumberOfPlayers"
+                    <select asp-for="SearchParameterSet.MinimumNumberOfPlayers"
                             asp-items="Model.MinimumNumberOfPlayersSelectList"
                             class="form-select"
                             style="background-color: #2e2e2e; color: #808080">
@@ -186,7 +190,7 @@
                 </div>
                 <div class="mb-3">
                     <label for="searchMinimumAge" class="form-label">Минимальный возраст</label>
-                    <select asp-for="SearchMinimumAge"
+                    <select asp-for="SearchParameterSet.MinimumAge"
                             asp-items="Model.MinimumAgeSelectList"
                             class="form-select"
                             style="background-color: #2e2e2e; color: #808080">
@@ -196,29 +200,23 @@
                 <div class="mb-3">
                     <label class="form-label">Сложность</label>
                     <br />
-                    <select asp-for="SearchMinimumDifficultyLevel"
+                    <select asp-for="SearchParameterSet.MinimumDifficultyLevel"
                             class="form-select-sm"
                             style="width: 45%; background-color: #2e2e2e; color: #808080">
-                        <option value="0" selected>Любая</option>
-                        @for (byte i = Model.MinimumDifficultyLevel; i <= Model.MaximumDifficultyLevel; i++)
-                        {
-                            <option value="@i">@i</option>
-                        }
+                        <option value="0">Любая</option>
+                        <partial name="_PartialDifficultyLevelOptionsView" model="minimumDifficultyLevel"/>
                     </select>
                     &#8212;
-                    <select asp-for="SearchMaximumDifficultyLevel"
+                    <select asp-for="SearchParameterSet.MaximumDifficultyLevel"
                             class="form-select-sm"
                             style="width: 45%; background-color: #2e2e2e; color: #808080">
-                        <option value="0" selected>Любая</option>
-                        @for (byte i = Model.MinimumDifficultyLevel; i <= Model.MaximumDifficultyLevel; i++)
-                        {
-                            <option value="@i">@i</option>
-                        }
+                        <option value="0">Любая</option>
+                        <partial name="_PartialDifficultyLevelOptionsView" model="maximumDifficultyLevel"/>
                     </select>
                 </div>
                 <div class="mb-3">
                     <label for="searchCompanyName" class="form-label">Компания</label>
-                    <select asp-for="SearchCompanyName"
+                    <select asp-for="SearchParameterSet.CompanyName"
                             asp-items="Model.CompanyNameSelectList"
                             class="form-select"
                             style="background-color: #2e2e2e; color: #808080">
@@ -227,26 +225,20 @@
                 </div>
                 <div class="mb-3">
                     <label for="searchRating" class="form-label">Рейтинг</label>
-                    <select asp-for="SearchRating"
+                    <select asp-for="SearchParameterSet.Rating"
                             class="form-select"
                             style="background-color: #2e2e2e; color: #808080">
-                        <option value="0" selected>Любой</option>
-                        @for (byte i = Model.MinimumRating; i <= Model.MaximumRating; i++)
-                        {
-                            <option value="@i">@i</option>
-                        }
+                        <option value="0">Любой</option>
+                        <partial name="_PartialRatingOptionsView" model="rating"/>
                     </select>
                 </div>
                 <div class="mb-5">
                     <label for="searchFearLevel" class="form-label">Страх</label>
-                    <select asp-for="SearchFearLevel"
+                    <select asp-for="SearchParameterSet.FearLevel"
                             class="form-select"
                             style="background-color: #2e2e2e; color: #808080">
-                        <option value="0" selected>Любой</option>
-                        @for (byte i = Model.MinimumFearLevel; i <= Model.MaximumFearLevel; i++)
-                        {
-                            <option value="@i">@i</option>
-                        }
+                        <option value="0">Любой</option>
+                        <partial name="_PartialFearLevelOptionsView" model="fearLevel"/>
                     </select>
                 </div>
                 <div class="mb-3 d-flex flex-column justify-content-end gap-3 h-100">

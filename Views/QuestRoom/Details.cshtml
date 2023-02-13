@@ -1,8 +1,20 @@
-﻿@using Homework.ViewModels.QuestRoom
-@model QuestRoomViewModel
+﻿@model QuestRoom
 
 @{
     ViewData["Title"] = "Details";
+
+    string fullName = $"{Model.Name} ({Model.CompanyName})";
+    string numberOfPlayers = $"{Model.MinimumNumberOfPlayers}-{Model.MaximumNumberOfPlayers}";
+    string minimumAge = $"{Model.MinimumAge}+";
+
+    const int ProgressBarMaximumValue = 100;
+    const int RatingMaximumValue = 5;
+    const int DifficultyLevelMaximumValue = 5;
+    const int FearLevelMaximumValue = 5;
+
+    string progressRating = $"{Model.Rating * (ProgressBarMaximumValue / RatingMaximumValue)}%";
+    string progressDifficulty = $"{Model.DifficultyLevel * (ProgressBarMaximumValue / DifficultyLevelMaximumValue)}%";
+    string progressFear = $"{Model.FearLevel * (ProgressBarMaximumValue / FearLevelMaximumValue)}%";
 }
 
 @section Styles {
@@ -47,24 +59,24 @@
             <div class="col-7 m-auto bg-image"
                  style="
             background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.9)),
-              url(@Model.PathToLogo);
+              url(@Html.Raw($"/{Model.PathToLogo}"));
           ">
                 <div class="row">
                     <div class="col-12 text-light ps-3 pe-3 pt-2 fs-4 text-uppercase fw-semibold">
-                        @Model.FullName
+                        @fullName
                     </div>
                     <div class="col-12 ps-3 pe-3 pt-2 text-warning">
-                        @Html.Raw(Model.RawRating)
+                        <partial name="_PartialRatingView" model="Model.Rating"/>
                     </div>
                     <div class="col-12 description text-justify text-light fs-14 py-3 mt-2 fw-semibold">
                         @Model.Description
                     </div>
                     <div class="col-9 m-auto fs-3 pt-3 text-white">
                         <div class="row row-cols-4 g-2 justify-content-center text-center p-2">
-                            <div>@Model.MinimumAge</div>
+                            <div>@minimumAge</div>
                             <div>
                                 <i class="fa fa-users"></i>
-                                @Model.NumberOfPlayers
+                                @numberOfPlayers
                             </div>
                             <div>
                                 <i class="fa fa-clock"></i>
@@ -72,7 +84,7 @@
                             </div>
                             <div>
                                 <i class="fa fa-money-check"></i>
-                                @Model.Price
+                                @Html.DisplayFor(questRoom => questRoom.Price)
                             </div>
                         </div>
                     </div>
@@ -116,19 +128,19 @@
                                     <div class="col-12 mb-3">
                                         Рейтинг
                                         <div class="progress mt-1">
-                                            <div class="progress-bar" style="width: @Model.ProgressRating"></div>
+                                            <div class="progress-bar" style="width: @progressRating"></div>
                                         </div>
                                     </div>
                                     <div class="col-12 mb-3">
                                         Сложность
                                         <div class="progress mt-1">
-                                            <div class="progress-bar" style="width: @Model.ProgressDifficulty"></div>
+                                            <div class="progress-bar" style="width: @progressDifficulty"></div>
                                         </div>
                                     </div>
                                     <div class="col-12 mb-3">
                                         Страх
                                         <div class="progress mt-1">
-                                            <div class="progress-bar" style="width: @Model.ProgressFear"></div>
+                                            <div class="progress-bar" style="width: @progressFear"></div>
                                         </div>
                                     </div>
                                 </div>
