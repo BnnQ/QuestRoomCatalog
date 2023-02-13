@@ -80,7 +80,7 @@ namespace Homework.Data
                        .HasConversion(difficultyLevel => difficultyLevel, difficultyLevel => Math.Max(0, Math.Min(5, difficultyLevel)));
 
                 questRoomBuilder.Property<string>(nameof(QuestRoom.PathToLogo))
-                                .HasDefaultValue("/media/QuestRoom/Logos/stub.jpg")
+                                .HasDefaultValue("media/QuestRoom/Logos/stub.jpg")
                                 .HasColumnType("nvarchar(256)")
                                 .HasMaxLength(256);
 
