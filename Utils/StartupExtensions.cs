@@ -1,6 +1,8 @@
 ﻿using Homework.Data;
 using Homework.Data.Entities;
 using Homework.Services;
+using Homework.Services.Abstractions;
+using Homework.Services.MapperProfiles;
 using Microsoft.EntityFrameworkCore;
 
 namespace Homework.Utils
@@ -10,13 +12,17 @@ namespace Homework.Utils
         public static WebApplicationBuilder ConfigureServices(this WebApplicationBuilder builder)
         {
             // Add services to the container.
-            builder.Services.AddTransient<DatabaseDataFilterBuilder<QuestRoom>>();
-            builder.Services.AddControllersWithViews();
             builder.Services.AddDbContext<QuestRoomContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("Default"));
             });
 
+            builder.Services.AddTransient<DatabaseDataFilterBuilder<QuestRoom>>()
+                            .AddTransient<IFileNameGenerator, UniqueFileNameGenerator>()
+                            .AddTransient<IFormImageProcessor, QuestRoomLogoImageSaver>()
+                            .AddAutoMapper(typeof(QuestRoomProfile))
+                            .AddControllersWithViews();
+            
             return builder;
         }
 
