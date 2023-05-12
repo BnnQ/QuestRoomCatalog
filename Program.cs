@@ -4,13 +4,13 @@ namespace Homework
 {
     public static class Program
     {
-        public static async Task Main(string[] args)
+        public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
             builder.ConfigureServices();
             var app = builder.Build();
 
-            await app.ConfigureAsync();
+            app.Configure();
             app.Run();
         }
     }

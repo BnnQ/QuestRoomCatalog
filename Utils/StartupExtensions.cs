@@ -7,30 +7,31 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Homework.Utils
 {
-    public static partial class StartupExtensions
+    public static class StartupExtensions
     {
         public static WebApplicationBuilder ConfigureServices(this WebApplicationBuilder builder)
         {
-            // Add services to the container.
             builder.Services.AddDbContext<QuestRoomContext>(options =>
             {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("Default"));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("Azure"));
             });
 
             builder.Services.AddTransient<DatabaseDataFilterBuilder<QuestRoom>>()
-                            .AddTransient<IFileNameGenerator, UniqueFileNameGenerator>()
-                            .AddTransient<IFormImageProcessor, QuestRoomLogoImageSaver>()
-                            .AddAutoMapper(typeof(QuestRoomProfile))
-                            .AddControllersWithViews();
-            
+                .AddTransient<IFileNameGenerator, UniqueFileNameGenerator>()
+                .AddTransient<IFormImageProcessor, QuestRoomLogoImageSaver>();
+
+            builder.Services.AddAutoMapper(profiles =>
+            {
+                profiles.AddProfile<QuestRoomProfile>();
+            });
+                            
+            builder.Services.AddControllersWithViews();
+
             return builder;
         }
 
-        public static async Task ConfigureAsync(this WebApplication app)
+        public static void Configure(this WebApplication app)
         {
-            using (var scope = app.Services.CreateScope())
-                await QuestRoomDatabaseInitializer.InitializeAsync(scope.ServiceProvider);
-            
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
