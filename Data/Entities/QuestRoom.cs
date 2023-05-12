@@ -111,10 +111,6 @@ namespace Homework.Data.Entities
             Price = price;
             PathToLogo = pathToLogo;
         }
-        public QuestRoom(int id, string name, string genre, string description, int minutesDuration, int minimumNumberOfPlayers, int maximumNumberOfPlayers, int minimumAge, string address, string phoneNumber, string email, string companyName, int rating, int fearLevel, int difficultyLevel, double price, string pathToLogo) 
-            : this(name, genre, description, minutesDuration, minimumNumberOfPlayers, maximumNumberOfPlayers, minimumAge, address, phoneNumber, email, companyName, rating, fearLevel, difficultyLevel, price, pathToLogo)
-        {
-            Id = id;
-        }
+        
     }
 }
