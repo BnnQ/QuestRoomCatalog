@@ -27,14 +27,21 @@ namespace Homework.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            logger.LogInformation("Index page requested");
+            if (context.QuestRooms is null)
+            {
+                logger.LogWarning("[GET] Index: failed to return view because database set 'QuestRooms' is null");
+                return NotFound();
+            }
+            
+            logger.LogInformation("[GET] Index: returning view");
             return View(await context.QuestRooms.ToListAsync());
         }
 
         [HttpGet]
         public IActionResult Create()
         {
-            return View(new CreateQuestRoomViewModel(new QuestRoomDto(), GetGenres(), GetCompanyNames()));
+            logger.LogInformation("[GET] Create: returning view");
+            return View(new CreateQuestRoomViewModel(new QuestRoomDto(), GetGenres() ?? new List<string>(), GetCompanyNames() ?? new List<string>()));
         }
 
         [HttpPost]
@@ -47,27 +54,27 @@ namespace Homework.Controllers
                 if (logo is not null)
                 {
                     createdQuestRoom.PathToLogo = imageProcessor.Process(logo);
-                    logger.LogInformation($@"Saved logo ""{logo.FileName}"" for created QuestRoom");
+                    logger.LogInformation("[POST] Create: saved logo \"\"{LogoFileNameme}\"\" for created QuestRoom", logo.FileName);
                 }
 
                 try
                 {
                     await context.AddAsync(createdQuestRoom);
                     await context.SaveChangesAsync();
-                    logger.LogInformation($"Successfully created QuestRoom with ID {createdQuestRoom.Id}");
+                    logger.LogInformation("[POST] Create: successfully created QuestRoom with ID {QuestRoomId}", createdQuestRoom.Id);
                 }
                 catch (Exception exception)
                 {
-                    logger.LogError($"Failed to create QuestRoom: {exception.Message}");
+                    logger.LogError("[POST] Create: failed to create QuestRoom: {ExceptionMessage}", exception.Message);
                     throw;
                 }
 
-                return RedirectToAction(nameof(Index));
+                return RedirectToIndex();
             }
             else
             {
-                string errorMessage = $"The entered data contains {ModelState.ErrorCount} errors";
-                logger.LogError($"Failed to create QuestRoom: {errorMessage}", ModelState);
+                var errorMessage = $"The entered data contains {ModelState.ErrorCount} errors";
+                logger.LogError("[POST] Create: failed to create QuestRoom ({ErrorMessage}), returning 404", errorMessage);
                 return Problem(errorMessage, statusCode: 404);
             }
         }
@@ -77,19 +84,19 @@ namespace Homework.Controllers
         {
             if (id is null || context.QuestRooms is null)
             {
-                logger.LogError("Failed to request edit page: passed ID is null or DB QuestRooms table is empty");
+                logger.LogError("[GET] Edit: failed to request edit page (passed ID is null or DB QuestRooms table is empty)");
                 return NotFound();
             }
 
             var questRoom = await context.QuestRooms.FindAsync(id);
             if (questRoom is null)
             {
-                logger.LogError($"Failed to return requested edit page: QuestRoom by ID {id} not found in DB");
+                logger.LogError("[GET] Edit: failed to return requested edit page (QuestRoom by ID {QuestRoomId} not found in database)", id);
                 return NotFound();
             }
 
-            logger.LogInformation($"Successfully requested edit page for QuestRoom with ID {id}");
-            return View(new EditQuestRoomViewModel(questRoom, GetGenres(), GetCompanyNames()));
+            logger.LogInformation("[GET] Edit: successfully requested edit page for QuestRoom with ID {QuestRoomId}", id);
+            return View(new EditQuestRoomViewModel(questRoom, GetGenres() ?? new List<string>(), GetCompanyNames() ?? new List<string>()));
         }
 
         [HttpPost]
@@ -100,26 +107,26 @@ namespace Homework.Controllers
             {
                 if (logo is not null)
                 {
-                    if (LogoExists(questRoom.PathToLogo))
+                    if (IsLogoExists(questRoom.PathToLogo))
                     {
                         DeleteLogo(questRoom.PathToLogo!);
-                        logger.LogInformation($@"Deleted QuestRoom logo ""{questRoom.PathToLogo}""");
+                        logger.LogInformation("[POST] Edit: deleted QuestRoom logo \"\"{QuestRoomPathToLogo}\"\"", questRoom.PathToLogo);
                     }
 
                     questRoom.PathToLogo = imageProcessor.Process(logo);
-                    logger.LogInformation($@"Saved new logo ""{logo.FileName}"" for QuestRoom with ID {questRoom.Id}");
+                    logger.LogInformation("[POST] Edit: saved new logo \"\"{LogoFileName}\"\" for QuestRoom with ID {QuestRoomId}", logo.FileName, questRoom.Id);
                 }
 
                 try
                 {
                     context.Update(questRoom);
                     await context.SaveChangesAsync();
-                    logger.LogInformation($"Successfully updated QuestRoom with ID {questRoom.Id}");
+                    logger.LogInformation("[POST] Edit: successfully edited QuestRoom with ID {QuestRoomId}", questRoom.Id);
                 }
                 catch (DbUpdateConcurrencyException exception)
                 {
-                    logger.LogError($"Failed to update QuestRoom with ID {questRoom.Id}: {exception.Message}");
-                    if (!QuestRoomExists(questRoom.Id))
+                    logger.LogError("[POST] Edit: failed to update QuestRoom with ID {QuestRoomId}: {ExceptionMessage}", questRoom.Id, exception.Message);
+                    if (!IsQuestRoomExists(questRoom.Id))
                     {
                         return NotFound();
                     }
@@ -128,9 +135,11 @@ namespace Homework.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                
+                return RedirectToIndex();
             }
-            return View(questRoom);
+            
+            return View(new EditQuestRoomViewModel(questRoom: questRoom, genres: GetGenres() ?? new List<string>(), companyNames: GetCompanyNames() ?? new List<string>()));
         }
 
         [HttpPost]
@@ -139,41 +148,49 @@ namespace Homework.Controllers
         {
             if (context.QuestRooms is null)
             {
-                string errorMessage = "Entity set 'QuestRoomContext.QuestRooms' is null.";
-                logger.LogError($"Failed to delete QuestRoom with ID {id}: {errorMessage}");
-                return Problem(errorMessage);
+                const string ErrorMessage = "Entity set 'QuestRoomContext.QuestRooms' is null.";
+                logger.LogError("[POST] Delete: failed to delete QuestRoom with ID {QuestRoomId} ({ErrorMessage})", id, ErrorMessage);
+                return Problem(ErrorMessage);
             }
+            
             var questRoom = await context.QuestRooms.FindAsync(id);
             if (questRoom is not null)
             {
-                if (LogoExists(questRoom.PathToLogo))
+                if (IsLogoExists(questRoom.PathToLogo))
                 {
                     DeleteLogo(questRoom.PathToLogo!);
-                    logger.LogInformation($@"Deleted QuestRoom logo ""{questRoom.PathToLogo}""");
+                    logger.LogInformation("[POST] Delete: deleted QuestRoom logo \"\"{QuestRoomPathToLogo}\"\"", questRoom.PathToLogo);
                 }
 
                 try
                 {
                     context.QuestRooms.Remove(questRoom);
                     await context.SaveChangesAsync();
-                    logger.LogInformation($"Successfully deleted QuestRoom with ID {id}");
+                    logger.LogInformation("[POST] Delete: successfully deleted QuestRoom with ID {QuestRoomId}", id);
                 }
                 catch (Exception exception)
                 {
-                    logger.LogError($"Failed to delete QuestRoom with ID {id}: {exception.Message}");
+                    logger.LogError("[POST] Delete: failed to delete QuestRoom with ID {QuestRoomId}: {ExceptionMessage}", id, exception.Message);
                     throw;
                 }
             }
 
+            return RedirectToIndex();
+        }
+
+        #region Utils
+
+        private IActionResult RedirectToIndex()
+        {
             return RedirectToAction(nameof(Index));
         }
-
-        private bool QuestRoomExists(int id)
+        
+        private bool IsQuestRoomExists(int id)
         {
-            return context.QuestRooms.Any(e => e.Id == id);
+            return context.QuestRooms is not null && context.QuestRooms.Any(e => e.Id == id);
         }
 
-        private bool LogoExists(string? relativePathToLogo)
+        private static bool IsLogoExists(string? relativePathToLogo)
         {
             return !string.IsNullOrWhiteSpace(relativePathToLogo) && !Path.GetFileNameWithoutExtension(relativePathToLogo).Equals("stub");
         }
@@ -183,16 +200,18 @@ namespace Homework.Controllers
             System.IO.File.Delete(Path.Combine(environment.WebRootPath, relativePathToLogo));
         }
 
+        #endregion
+
         #region General data selectors
-        private IEnumerable<string> GetGenres()
+        private IEnumerable<string>? GetGenres()
         {
-            return context.QuestRooms.Select(questRoom => questRoom.Genre)
+            return context.QuestRooms?.Select(questRoom => questRoom.Genre)
                                      .AsEnumerable();
         }
 
-        private IEnumerable<string> GetCompanyNames()
+        private IEnumerable<string>? GetCompanyNames()
         {
-            return context.QuestRooms.Select(questRoom => questRoom.CompanyName)
+            return context.QuestRooms?.Select(questRoom => questRoom.CompanyName)
                                      .AsEnumerable();
         }
         #endregion
