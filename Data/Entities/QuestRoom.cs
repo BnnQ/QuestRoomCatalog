@@ -87,30 +87,5 @@ namespace Homework.Data.Entities
         
         [DisplayName("Логотип")]
         public string? PathToLogo { get; set; }
-
-        public QuestRoom()
-        {
-            //empty
-        }
-        public QuestRoom(string name, string genre, string description, int minutesDuration, int minimumNumberOfPlayers, int maximumNumberOfPlayers, int minimumAge, string address, string phoneNumber, string email, string companyName, int rating, int fearLevel, int difficultyLevel, double price, string? pathToLogo)
-        {
-            Name = name;
-            Genre = genre;
-            Description = description;
-            MinutesDuration = minutesDuration;
-            MinimumNumberOfPlayers = minimumNumberOfPlayers;
-            MaximumNumberOfPlayers = maximumNumberOfPlayers;
-            MinimumAge = minimumAge;
-            Address = address;
-            PhoneNumber = phoneNumber;
-            Email = email;
-            CompanyName = companyName;
-            Rating = rating;
-            FearLevel = fearLevel;
-            DifficultyLevel = difficultyLevel;
-            Price = price;
-            PathToLogo = pathToLogo;
-        }
-        
     }
 }
